@@ -1,5 +1,5 @@
 ---
-mip: 1eaf
+mip: 8
 title: Page-ified Storage State
 description: Partition EVM storage to align with database pages.
 author: Category Labs
@@ -261,7 +261,7 @@ To reason about the worst case, consider a single block of EVM execution where a
 
 ## Future Directions
 
-BLAKE3 provides a flexible framework for defining fixed-size Merkle trees over “black-box” hash functions. This flexibility enables a correspondence between trees of different fanouts. In the MIP-7r3e, we explore this correspondence to reduce inclusion proof size, minimize Merklization overhead, and optimize storage writes. 
+BLAKE3 provides a flexible framework for defining fixed-size Merkle trees over “black-box” hash functions. This flexibility enables a correspondence between trees of different fanouts. In the MIP-9, we explore this correspondence to reduce inclusion proof size, minimize Merklization overhead, and optimize storage writes. 
 
 ## **Copyright**
 
