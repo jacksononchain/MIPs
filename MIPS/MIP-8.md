@@ -1,9 +1,11 @@
 ---
 mip: 8
 title: Page-ified Storage State
-description: Partition EVM storage to align with database pages.
+description: Partition EVM storage to align with database pages
 author: Category Labs
 discussions-to: https://forum.monad.xyz/t/mip-8-page-ified-storage-state/407
+status: Draft
+type: Standards Track
 category: Core
 created: 2026-03-05
 ---
@@ -266,4 +268,4 @@ BLAKE3 provides a flexible framework for defining fixed-size Merkle trees over �
 
 ## **Copyright**
 
-Copyright and related rights waived via [CC0](https://github.com/monad-crypto/MIPs/blob/main/LICENSE.md).
+Copyright and related rights waived via [CC0](../LICENSE.md).
