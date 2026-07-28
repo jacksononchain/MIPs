@@ -217,12 +217,14 @@
         transition: opacity 0.12s ease, transform 0.12s ease;
         pointer-events: none;
       }
-      /* On the index the status pill is in the rightmost column, so anchor its
-         tooltip to the right so it can't overflow the viewport edge. */
+      /* The index's scrollable panels clip on both axes, so their tooltips
+         are fixed to the viewport instead, positioned on hover by script. */
       .proposal-table .status-pill.has-tip::after,
       .proposal-table .type-pill.has-tip::after {
+        position: fixed;
         left: auto;
-        right: 0;
+        right: var(--tip-right, 0px);
+        top: var(--tip-top, 100vh);
       }
       .has-tip:hover::after,
       .has-tip:focus-visible::after {
@@ -382,6 +384,22 @@
         });
         document.querySelectorAll(".type-pill").forEach(function (el) {
           tagTip(el, typeTips[(el.textContent || "").trim().toLowerCase()]);
+        });
+
+        // Place the index tables' fixed tooltips: below the pill, right-aligned,
+        // flipped above when the viewport bottom would crop them.
+        document.addEventListener("pointerover", function (event) {
+          var pill = event.target.closest(".proposal-table .has-tip");
+          if (!pill) return;
+          var rect = pill.getBoundingClientRect();
+          var tip = window.getComputedStyle(pill, "::after");
+          var top = rect.bottom + 7;
+          if (top + parseFloat(tip.height) > window.innerHeight) {
+            top = rect.top - 7 - parseFloat(tip.height);
+          }
+          var right = Math.min(Math.max(4, window.innerWidth - rect.right), window.innerWidth - parseFloat(tip.width) - 4);
+          pill.style.setProperty("--tip-top", top + "px");
+          pill.style.setProperty("--tip-right", right + "px");
         });
 
         var mipContent = document.querySelector(".mip-content");
