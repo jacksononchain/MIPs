@@ -472,8 +472,12 @@
 
       // Prefetch selected internal links on hover or focus
       var prefetched = new Set();
+      var hoverTimer;
+      function linkFrom(e) {
+        return e.target instanceof Element ? e.target.closest("a[href], [data-href]") : null;
+      }
       function maybePrefetchLink(link) {
-        var href = link.getAttribute("href");
+        var href = link.getAttribute("data-href") || link.getAttribute("href");
         if (!href || href === "#") return;
         if (!link.hasAttribute("data-prefetch-on-hover") && !/(MIP|MRC)-\d+/.test(href)) return;
         try {
@@ -490,14 +494,23 @@
         document.head.appendChild(prefetchLink);
       }
 
-      ["mouseover", "focusin"].forEach(function (eventName) {
-        document.addEventListener(eventName, function (e) {
-          var target = e.target;
-          if (!(target instanceof Element)) return;
-          var link = target.closest("a[href]");
-          if (!link) return;
-          maybePrefetchLink(link);
-        });
+      // Hover waits a beat so sweeping down the index doesn't prefetch every
+      // row it passes; focus is deliberate, so it's immediate.
+      document.addEventListener("mouseover", function (e) {
+        var link = linkFrom(e);
+        clearTimeout(hoverTimer);
+        if (link) {
+          hoverTimer = setTimeout(function () { maybePrefetchLink(link); }, 120);
+        }
+      });
+
+      document.addEventListener("mouseout", function () {
+        clearTimeout(hoverTimer);
+      });
+
+      document.addEventListener("focusin", function (e) {
+        var link = linkFrom(e);
+        if (link) maybePrefetchLink(link);
       });
     </script>
   </body>
