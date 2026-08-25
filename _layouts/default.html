@@ -7,263 +7,72 @@
     {% assign meta_description = meta_description | markdownify | strip_html | normalize_whitespace | strip %}
     <meta name="description" content="{{ meta_description | truncate: 160 | escape }}" />
     <link rel="icon" type="image/svg+xml" href="{{ '/favicon.svg' | relative_url }}" />
-    <title>Monad Improvement Proposals (MIPs)</title>
+    {% if page.mip %}
+      {% if page.category == "MRC" %}{% assign doc_kind = "MRC-" %}{% else %}{% assign doc_kind = "MIP-" %}{% endif %}
+      {% assign page_title = doc_kind | append: page.mip | append: ": " | append: page.title %}
+      {% assign document_title = page_title | append: " | " | append: site.title %}
+    {% else %}
+      {% assign page_title = site.title %}
+      {% if page.title %}{% assign page_title = site.title | append: " (" | append: page.title | append: ")" %}{% endif %}
+      {% assign document_title = page_title %}
+    {% endif %}
+    <title>{{ document_title | escape }}</title>
+    <meta property="og:locale" content="en_US">
+    <meta property="og:title" content="{{ page_title | escape }}">
+    <meta property="og:description" content="{{ meta_description | truncate: 160 | escape }}">
+    <meta property="og:url" content="{{ page.url | absolute_url }}">
+    <meta property="og:site_name" content="{{ site.title | escape }}">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="{{ '/og.webp' | absolute_url }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/webp">
+    <meta property="og:image:alt" content="Monad Improvement Proposals">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@monad">
+    <link rel="preload" as="font" type="font/woff2" href="{{ '/assets/fonts/inter-latin.woff2' | relative_url }}" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="{{ '/assets/fonts/roboto-mono-latin.woff2' | relative_url }}" crossorigin />
+    {% if page.mip %}<link rel="preload" as="font" type="font/woff2" href="{{ '/assets/fonts/britti-sans-variable.woff2' | relative_url }}" crossorigin />{% endif %}
+    <link rel="stylesheet" href="{{ '/assets/ds/colors_and_type.css' | relative_url }}" />
+    {% if page.buttons %}<link rel="stylesheet" href="{{ '/assets/ds/buttons.css' | relative_url }}" />{% endif %}
+    <link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}" />
+    {% if page.mip %}
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
     <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerpolicy="no-referrer" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerpolicy="no-referrer" /></noscript>
-    <style>
-      :root {
-        --text: #111827;
-        --muted: #6b7280;
-        --border: #d1d5db;
-        --bg-soft: #f9fafb;
-        --link: #2563eb;
-      }
-      body {
-        color: var(--text);
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 1.5rem 1rem 3rem;
-        line-height: 1.55;
-      }
-      h1, h2, h3 {
-        line-height: 1.25;
-        margin-top: 1.25rem;
-      }
-      a {
-        color: var(--link);
-        text-decoration: none;
-      }
-      a:hover {
-        text-decoration: underline;
-      }
-      table {
-        border-collapse: collapse;
-        width: 100%;
-        margin: 1rem 0;
-        font-size: 0.98rem;
-      }
-      th, td {
-        border: 1px solid var(--border);
-        padding: 0.55rem 0.65rem;
-        vertical-align: top;
-      }
-      th {
-        background: var(--bg-soft);
-        text-align: left;
-      }
-      code {
-        background: #f3f4f6;
-        padding: 0.1rem 0.3rem;
-        border-radius: 4px;
-      }
-      pre {
-        background: #f8fafc;
-        border: 1px solid var(--border);
-        border-radius: 6px;
-        padding: 0.75rem;
-        overflow-x: auto;
-      }
-      pre code {
-        background: transparent;
-        padding: 0;
-      }
-      .highlight pre {
-        margin: 0;
-        background: transparent;
-        border: 0;
-      }
-      .highlight .c, .highlight .cm, .highlight .c1, .highlight .cs { color: #6a737d; font-style: italic; }
-      .highlight .k, .highlight .kc, .highlight .kd, .highlight .kn, .highlight .kp, .highlight .kr, .highlight .kt { color: #d73a49; }
-      .highlight .na, .highlight .nc, .highlight .nf, .highlight .fm { color: #6f42c1; }
-      .highlight .s, .highlight .sa, .highlight .sb, .highlight .sc, .highlight .dl, .highlight .sd, .highlight .s2, .highlight .se, .highlight .sh, .highlight .si, .highlight .sx, .highlight .sr, .highlight .s1, .highlight .ss { color: #032f62; }
-      .highlight .m, .highlight .mb, .highlight .mf, .highlight .mh, .highlight .mi, .highlight .mo { color: #005cc5; }
-      .highlight .o, .highlight .ow { color: #d73a49; }
-      .highlight .nb, .highlight .bp { color: #005cc5; }
-      .highlight .nv, .highlight .vc, .highlight .vg, .highlight .vi { color: #e36209; }
-      .highlight .err { color: #b31d28; background-color: #ffeef0; }
-      .muted {
-        color: var(--muted);
-      }
-      .page-wrap {
-        margin-top: 0.25rem;
-      }
-      .home-footer {
-        margin-top: 2rem;
-        padding-top: 0.75rem;
-        border-top: 1px solid var(--border);
-        text-align: center;
-      }
-      .icon-link {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 1.5rem;
-        font-size: 1rem;
-      }
-      .title-icons {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.15rem;
-        margin-left: 0.2rem;
-      }
-    </style>
+    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/prism.min.js" integrity="sha512-HiD3V4nv8fcjtouznjT9TqDNDm1EXngV331YGbfVGeKUoH+OLkRTCMzA34ecjlgSQZpdHZupdSrqHY+Hz3l6uQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-python.min.js" integrity="sha512-AKaNmg8COK0zEbjTdMHJAPJ0z6VeNqvRvH4/d5M4sHJbQQUToMBtodq4HaV4fa+WV2UTfoperElm66c9/8cKmQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-solidity.min.js" integrity="sha512-cVwDlg8/p6UhSKtcNwXU8mv3QL7uwVilUFE5EtblYWLjAXqyYOh7yXDCkNKJH279fvVe4vzD0OoMX3GokaAU2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <noscript>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    </noscript>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/prism.min.js" integrity="sha512-HiD3V4nv8fcjtouznjT9TqDNDm1EXngV331YGbfVGeKUoH+OLkRTCMzA34ecjlgSQZpdHZupdSrqHY+Hz3l6uQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-python.min.js" integrity="sha512-AKaNmg8COK0zEbjTdMHJAPJ0z6VeNqvRvH4/d5M4sHJbQQUToMBtodq4HaV4fa+WV2UTfoperElm66c9/8cKmQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-solidity.min.js" integrity="sha512-cVwDlg8/p6UhSKtcNwXU8mv3QL7uwVilUFE5EtblYWLjAXqyYOh7yXDCkNKJH279fvVe4vzD0OoMX3GokaAU2A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    {% endif %}
+    <script defer src="{{ '/assets/js/site.js' | relative_url }}"></script>
   </head>
   <body>
-    <main class="page-wrap">
-      {{ content }}
-    </main>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        if (window.Prism && typeof Prism.highlightElement === "function") {
-          var codeBlocks = document.querySelectorAll("pre > code");
+    <header class="site-header">
+      <div class="shell">
+        <a class="brand" href="{{ '/' | relative_url }}" data-prefetch-on-hover="true">
+          <img src="{{ '/assets/brand/logo-full-default.svg' | relative_url }}" alt="Monad" width="423" height="80" />
+          <span class="rule"></span>
+          <span class="eyebrow">Improvement Proposals</span>
+        </a>
+        <nav class="header-links desk-only" aria-label="Elsewhere">
+          <a class="eyebrow" href="https://forum.monad.xyz/c/mips/8" target="_blank" rel="noopener noreferrer">Discussions</a>
+          <a class="eyebrow" href="https://github.com/monad-crypto/MIPs" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </header>
 
-          codeBlocks.forEach(function (code) {
-            var pre = code.parentElement;
-            if (!pre) {
-              return;
-            }
+    {{ content }}
 
-            var languageClass = Array.from(code.classList).find(function (cls) {
-              return cls.indexOf("language-") === 0;
-            });
-
-            if (!languageClass) {
-              var wrapper = code.closest("[class*='language-']");
-              if (wrapper) {
-                languageClass = Array.from(wrapper.classList).find(function (cls) {
-                  return cls.indexOf("language-") === 0;
-                });
-              }
-            }
-
-            if (!languageClass || languageClass === "language-plaintext") {
-              return;
-            }
-
-            code.classList.add(languageClass);
-            pre.classList.add(languageClass);
-            Prism.highlightElement(code);
-          });
-        }
-
-        var links = document.querySelectorAll("a[href]");
-        links.forEach(function (link) {
-          var href = link.getAttribute("href");
-          if (!href || href.startsWith("http://") || href.startsWith("https://") || href.startsWith("mailto:") || href.startsWith("#")) {
-            return;
-          }
-
-          if (/(^|\/)MIP-\d+\.md(#.*)?$/.test(href)) {
-            link.setAttribute("href", href.replace(/\.md(?=#|$)/, ""));
-          }
-        });
-
-        function escapeHtml(value) {
-          return value
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/\"/g, "&quot;")
-            .replace(/'/g, "&#39;");
-        }
-
-        function linkifyAuthor(value) {
-          var pattern = /([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})|@([a-z\d](?:[a-z\d-]{0,38}))/gi;
-          var output = "";
-          var lastIndex = 0;
-          var match;
-
-          while ((match = pattern.exec(value)) !== null) {
-            output += escapeHtml(value.slice(lastIndex, match.index));
-
-            if (match[1]) {
-              var email = match[1];
-              output += '<a href="mailto:' + email + '">' + escapeHtml(email) + '</a>';
-            } else if (match[2]) {
-              var username = match[2];
-              output += '<a href="https://github.com/' + username + '">@' + escapeHtml(username) + '</a>';
-            }
-
-            lastIndex = pattern.lastIndex;
-          }
-
-          output += escapeHtml(value.slice(lastIndex));
-          return output;
-        }
-
-        function linkifyMentionsInText(value) {
-          var pattern = /(^|[^a-z\d_])@([a-z\d](?:[a-z\d-]{0,38}))/gi;
-          var output = "";
-          var lastIndex = 0;
-          var match;
-
-          while ((match = pattern.exec(value)) !== null) {
-            output += escapeHtml(value.slice(lastIndex, match.index));
-            output += escapeHtml(match[1]);
-            output += '<a href="https://github.com/' + match[2] + '">@' + escapeHtml(match[2]) + '</a>';
-            lastIndex = pattern.lastIndex;
-          }
-
-          output += escapeHtml(value.slice(lastIndex));
-          return output;
-        }
-
-        var authorFields = document.querySelectorAll(".author-value");
-        authorFields.forEach(function (field) {
-          var raw = field.textContent || "";
-          field.innerHTML = linkifyAuthor(raw);
-        });
-
-        var mipContent = document.querySelector(".mip-content");
-        if (mipContent) {
-          var walker = document.createTreeWalker(
-            mipContent,
-            NodeFilter.SHOW_TEXT,
-            {
-              acceptNode: function (node) {
-                var parent = node.parentElement;
-                if (!parent) {
-                  return NodeFilter.FILTER_REJECT;
-                }
-
-                var tag = parent.tagName;
-                if (tag === "A" || tag === "CODE" || tag === "PRE" || tag === "SCRIPT" || tag === "STYLE") {
-                  return NodeFilter.FILTER_REJECT;
-                }
-
-                if (!node.nodeValue || node.nodeValue.indexOf("@") === -1) {
-                  return NodeFilter.FILTER_REJECT;
-                }
-
-                return NodeFilter.FILTER_ACCEPT;
-              }
-            }
-          );
-
-          var textNodes = [];
-          var current;
-          while ((current = walker.nextNode())) {
-            textNodes.push(current);
-          }
-
-          textNodes.forEach(function (node) {
-            var raw = node.nodeValue || "";
-            var linked = linkifyMentionsInText(raw);
-            if (linked === escapeHtml(raw)) {
-              return;
-            }
-
-            var replacement = document.createElement("span");
-            replacement.innerHTML = linked;
-            node.parentNode.replaceChild(replacement, node);
-          });
-        }
-      });
-    </script>
+    {% if page.mip %}
+      <nav class="toc" id="page-toc" aria-label="On this page" hidden>
+        <div class="toc-progress"><span id="toc-progress-bar"></span></div>
+        <div class="toc-panel" id="page-toc-list"></div>
+      </nav>
+    {% endif %}
   </body>
 </html>

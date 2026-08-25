@@ -1,7 +1,7 @@
 title: Monad Improvement Proposals
 description: Monad Improvement Proposals (MIPs)
-url: ""
-baseurl: ""
+url: "https://mips.monad.xyz"
+baseurl: 
 lang: en
 timezone: UTC
 
@@ -24,9 +24,14 @@ gist:
 defaults:
   -
     scope:
-      path: "MIPS"
+      path: "MIPs"
     values:
-      layout: "mip"
+      layout: "proposal"
+  -
+    scope:
+      path: "MRCs"
+    values:
+      layout: "proposal"
 
 exclude:
   - .github
@@ -39,6 +44,8 @@ include:
   - LICENSE.md
 
 sass:
+  style: compressed
+  sourcemap: never
   quiet_deps: true
   silence_deprecations:
     - import

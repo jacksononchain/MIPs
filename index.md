@@ -1,46 +1,70 @@
 ---
 layout: default
 title: MIPs
+description: Monad Improvement Proposals (MIPs) describe standards for the Monad ecosystem, such as protocol specifications.
 ---
 
-# Monad Improvement Proposals (MIPs)
+{% assign mips = site.pages | where_exp: "p", "p.mip and p.category != 'MRC'" | sort: "mip" %}
+{% assign mrcs = site.pages | where_exp: "p", "p.mip and p.category == 'MRC'" | sort: "mip" %}
 
-{% assign mips = site.pages | where_exp: "p", "p.mip" | sort: "mip" %}
+<main class="shell page">
+<h1 class="sr-only">Monad Improvement Proposals</h1>
 
+<div class="tabs" role="tablist" aria-label="Proposal type">
+	<button type="button" class="tab" id="tab-mips" role="tab" aria-selected="true" aria-controls="panel-mips" data-panel="mips">MIPs <span class="n">{{ mips.size }}</span></button>
+	<button type="button" class="tab" id="tab-mrcs" role="tab" aria-selected="false" aria-controls="panel-mrcs" data-panel="mrcs" tabindex="-1">MRCs <span class="n">{{ mrcs.size }}</span></button>
+</div>
+
+<div class="controls">
+	<div class="search-box" role="search">
+		<svg class="ic" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.5 3a7.5 7.5 0 1 1 0 15 7.5 7.5 0 0 1 0-15Zm10.5 18-5.4-5.4"/></svg>
+		<input id="proposal-search" type="search" autocomplete="off" spellcheck="false" placeholder="Search by number, title, author, or type…" aria-label="Search MIPs and MRCs" />
+		<button type="button" class="xbtn" id="search-clear" aria-label="Clear search" title="Clear search" hidden><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+		<kbd id="search-hint" aria-hidden="true">/</kbd>
+	</div>
+	<div class="filter" id="status-filter">
+		<button type="button" class="fbtn" id="filter-button" aria-haspopup="true" aria-expanded="false">All<svg class="chev" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+		<div class="fmenu" id="filter-menu" role="menu" hidden></div>
+	</div>
+</div>
+
+<section class="panel" id="panel-mips" role="tabpanel" aria-labelledby="tab-mips" data-collection="MIPs">
 {% if mips.size > 0 %}
-<table>
-	<thead>
-		<tr>
-			<th>Number</th>
-			<th>Title</th>
-			<th>Author</th>
-			<th>Type</th>
-		</tr>
-	</thead>
-	<tbody>
-		{% for p in mips %}
-			<tr>
-				<td><a href="{{ p.url | relative_url }}">{{ p.mip | escape }}</a></td>
-				<td>{{ p.title | escape }}</td>
-				<td class="author-value">{{ p.author | default: "-" | escape }}</td>
-				<td>{{ p.type | default: "-" | escape }}</td>
-			</tr>
-		{% endfor %}
-	</tbody>
-</table>
+	{% include ledger.html rows=mips %}
 {% else %}
-No MIPs found.
+	<p class="eyebrow">No MIPs found.</p>
 {% endif %}
+</section>
 
-<footer class="home-footer muted">
-	<p>
-		<a href="https://github.com/monad-crypto/MIPs" target="_blank" rel="noopener noreferrer" aria-label="Open GitHub repository">
-			<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false" style="vertical-align: text-bottom; margin-right: 0.35rem; fill: currentColor;">
-				<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.65 7.65 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"></path>
-			</svg>
-		    monad-crypto/MIPs
-		</a>
-		|
-		<a href="{{ '/LICENSE.md' | relative_url }}">license</a>
-	</p>
+<section class="panel" id="panel-mrcs" role="tabpanel" aria-labelledby="tab-mrcs" data-collection="MRCs" hidden>
+{% if mrcs.size > 0 %}
+	{% include ledger.html rows=mrcs %}
+{% else %}
+	<p class="eyebrow">No MRCs found.</p>
+{% endif %}
+</section>
+
+<div class="empty" id="no-results" hidden>
+	<div class="label">No results</div>
+	<h2>Nothing matches these filters.</h2>
+	<p>Try a different status or clear the search bar.</p>
+	<button type="button" class="reset" id="reset-filters">Reset filters</button>
+</div>
+
+<footer class="site-footer">
+	<a href="https://github.com/monad-crypto/MIPs" target="_blank" rel="noopener noreferrer">monad-crypto/MIPs</a>
+	<a href="https://forum.monad.xyz/c/mips/8" target="_blank" rel="noopener noreferrer">Discussions</a>
+	<a href="{{ '/LICENSE.md' | relative_url }}">License</a>
 </footer>
+</main>
+
+<noscript>
+	<style>
+		/* Without JS the tabs, search, and status filter can't work: show both
+		   collections stacked and hide the dead controls. */
+		.tabs, .controls { display: none; }
+		.panel[hidden] { display: block; }
+	</style>
+</noscript>
+
+<script defer src="{{ '/assets/js/index.js' | relative_url }}"></script>
